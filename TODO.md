@@ -23,4 +23,4 @@
 - [ ] Módulo 4: arquivo WAV
 	- [ ] al_wav_write: converte para int16_t, monta o cabeçalho e grava o .wav. 
 
-%% podem criar identações entre as funções pra tarefas sobre cada uma :)
+<!-- podem criar identações entre as funções pra tarefas sobre cada uma :) --> 
