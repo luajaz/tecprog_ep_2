@@ -1,11 +1,12 @@
 - [X] criar repo
 - [X] criar to-do
 
-- [ ] Módulo 1: notas e escalas 
-	- [ ] al_midi_to_hz: converte uma nota MIDI em frequência (Hz).
-	- [ ] al_interval_semitones: calcula a distância em semitons entre duas notas.
-	- [ ] al_interval_ratio: dá a razão de frequência de um intervalo em semitons.
-	- [ ] al_scale_generate: gera as notas de uma escala (maior, menor, pentatônica, cromática) a partir de uma nota inicial. 
+- [X] Módulo 1: notas e escalas 
+	- [X] al_midi_to_hz: converte uma nota MIDI em frequência (Hz).
+	- [X] al_interval_semitones: calcula a distância em semitons entre duas notas.
+	- [X] al_interval_ratio: dá a razão de frequência de um intervalo em semitons.
+	- [X] al_scale_generate: gera as notas de uma escala (maior, menor, pentatônica, cromática) a partir de uma nota inicial.
+    - [X] al_scale_length: dá o comprimento da escala do tipo escolhido
 
 - [ ] Módulo 2: formas de onda
 	- [ ] al_wave_sine: preenche um buffer com senoide.
