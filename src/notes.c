@@ -69,7 +69,7 @@ al_status al_scale_generate(uint8_t midi_root, al_scale_type type,
   if (scale == NULL)
     return AL_ERR_NULL_ARG;
 
-  if (midi_root > 127 || (int)type < 0 || (int)type >= N_SCALES)
+  if (midi_root > 127 || (size_t) type >= N_SCALES)
     return AL_ERR_INVALID_ARG;
 
   int sum = 0;
@@ -94,7 +94,7 @@ al_status al_scale_length(al_scale_type type, size_t* len) {
 
   *len = 0;
 
-  if ((int)type < 0 || (int)type >= N_SCALES)
+  if ((size_t) type >= N_SCALES)
     return AL_ERR_INVALID_ARG;
 
   *len = SCALES[type].count + 1;
