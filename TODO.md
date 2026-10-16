@@ -8,11 +8,11 @@
 	- [X] al_scale_generate: gera as notas de uma escala (maior, menor, pentatônica, cromática) a partir de uma nota inicial.
     - [X] al_scale_length: dá o comprimento da escala do tipo escolhido
 
-- [ ] Módulo 2: formas de onda
-	- [ ] al_wave_sine: preenche um buffer com senoide.
-	- [ ] al_wave_square: preenche com onda quadrada.
-	- [ ] al_wave_saw: preenche com dente de serra. 
-	- [ ] al_wave_triangle: preenche com onda triangular.
+- [X] Módulo 2: formas de onda
+	- [X] al_wave_sine: preenche um buffer com senoide.
+	- [X] al_wave_square: preenche com onda quadrada.
+	- [X] al_wave_saw: preenche com dente de serra. 
+	- [X] al_wave_triangle: preenche com onda triangular.
 
 - [ ] Módulo 3: efeitos
 	- [ ] al_fx_gain: muda o volume.
