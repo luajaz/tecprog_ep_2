@@ -20,6 +20,7 @@
  * Retorno:
  * n amostras entre -amp e amp geradas no ponteiro de saida buffer, com o
  * conteúdo prévio de buffer sendo sobrescrito
+ * se n == 0 nada é escrito no buffer, e a função retorna sucesso
  *
  * al_status retorna se a função foi bem sucedida ou ocorreu um erro
  *
@@ -50,6 +51,7 @@ al_status al_wave_sine(float *buffer, size_t n, double freq, double amp,
  * Retorno:
  * n amostras entre -amp e amp geradas no ponteiro de saida buffer, com o
  * conteúdo prévio de buffer sendo sobrescrito
+ * se n == 0 nada é escrito no buffer, e a função retorna sucesso
  *
  * al_status retorna se a função foi bem sucedida ou ocorreu um erro
  *
@@ -80,6 +82,7 @@ al_status al_wave_square(float *buffer, size_t n, double freq, double amp,
  * Retorno:
  * n amostras entre -amp e amp geradas no ponteiro de saida buffer, com o
  * conteúdo prévio de buffer sendo sobrescrito
+ * se n == 0 nada é escrito no buffer, e a função retorna sucesso
  *
  * al_status retorna se a função foi bem sucedida ou ocorreu um erro
  *
@@ -109,6 +112,7 @@ al_status al_wave_saw(float *buffer, size_t n, double freq, double amp,
  * Retorno:
  * n amostras entre -amp e amp geradas no ponteiro de saida buffer, com o
  * conteúdo prévio de buffer sendo sobrescrito
+ * se n == 0 nada é escrito no buffer, e a função retorna sucesso
  *
  * al_status retorna se a função foi bem sucedida ou ocorreu um erro
  *
