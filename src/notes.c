@@ -19,13 +19,13 @@ static const scale_def SCALES[] = {{7, {2, 2, 1, 2, 2, 2, 1}},
 
 al_status al_midi_to_hz(uint8_t midi_note, double *hz) {
   
-  
   if (hz == NULL)
     return AL_ERR_NULL_ARG;
 
   *hz = 0;
 
-  if (midi_note > 127)
+  // verificacao invertida evita problema com NaN
+  if (!(midi_note <= 127))
     return AL_ERR_INVALID_ARG;
 
   *hz = 440.0 * pow(2.0, (midi_note - 69) / 12.0);
@@ -41,7 +41,8 @@ al_status al_interval_semitones(uint8_t midi_note_a, uint8_t midi_note_b,
 
   *interval = 0;
 
-  if (midi_note_a > 127 || midi_note_b > 127)
+  // verificacao invertida evita problema com NaN
+  if (!(midi_note_a <= 127) || !(midi_note_b <= 127))
     return AL_ERR_INVALID_ARG;
 
   *interval = (int)midi_note_b - midi_note_a;
@@ -56,7 +57,8 @@ al_status al_interval_ratio(int interval, double *ratio) {
 
   *ratio = 0;
 
-  if (interval > 127 || interval < -127)
+  // verificacao invertida evita problema com NaN
+  if (!(interval <= 127) || !(interval >= -127))
     return AL_ERR_INVALID_ARG;
 
   *ratio = pow(2.0, interval / 12.0);
@@ -69,7 +71,8 @@ al_status al_scale_generate(uint8_t midi_root, al_scale_type type,
   if (scale == NULL)
     return AL_ERR_NULL_ARG;
 
-  if (midi_root > 127 || (int)type < 0 || (int)type >= N_SCALES)
+  // verificacao invertida evita problema com NaN
+  if (!(midi_root <= 127) || !((size_t) type < N_SCALES))
     return AL_ERR_INVALID_ARG;
 
   int sum = 0;
@@ -77,7 +80,8 @@ al_status al_scale_generate(uint8_t midi_root, al_scale_type type,
     sum += SCALES[type].steps[i];
   }
 
-  if ((int)midi_root + sum > 127)
+  // verificacao invertida evita problema com NaN
+  if (!((int) midi_root + sum <= 127))
     return AL_ERR_INVALID_ARG;
 
   scale[0] = midi_root;
@@ -94,7 +98,8 @@ al_status al_scale_length(al_scale_type type, size_t* len) {
 
   *len = 0;
 
-  if ((int)type < 0 || (int)type >= N_SCALES)
+  // verificacao invertida evita problema com NaN
+  if (!((size_t) type < N_SCALES))
     return AL_ERR_INVALID_ARG;
 
   *len = SCALES[type].count + 1;
