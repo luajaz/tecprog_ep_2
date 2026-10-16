@@ -71,16 +71,26 @@ al_status al_interval_semitones(uint8_t midi_note_a, uint8_t midi_note_b, int* i
  * Calcula a razão de frequência de um intervalo em semitons
  *
  * Entrada:
- * interval: um intervalo em semitons
+ * interval: um intervalo em semitons, entre -127 e 127
+ *
+ * ratio: ponteiro double usado para o retorno da função
  *
  * Retorno:
- * um valor double que representa a mudança em frequência do intervalo
+ * um valor double retornado em ratio, que representa a mudança em frequência do
+ * intervalo
  *
+ * Erros:
+ * abs(interval) > 127 -> Argumento inválido (AL_ERR_INVALID_ARG)
+ * ratio == NULL       -> Argumento nulo     (AL_ERR_NULL_ARG)
+ *
+ * em caso de erro ratio = 0, se ratio != NULL
+ * 
  */
-double al_interval_ratio(int interval);
+al_status al_interval_ratio(int interval, double* ratio);
 
 /*
- * Gera uma escala do tipo escolhido num vetor, incluindo a nota raiz e oitava final,
+ * Gera uma escala do tipo escolhido num vetor, incluindo a nota raiz e oitava
+ * final,
  * com as notas em ordem crescente
  * os tipos possíveis são: maior(8 notas), menor(8 notas), pentatônica maior(6 notas),
  * pentatônica menor(6 notas), cromática(13 notas)
@@ -90,12 +100,11 @@ double al_interval_ratio(int interval);
  * escala
  * type: tipo da escala a ser gerada
  *
- * scale_out; out_len: ponteiros usados para o retorno da função
- * scale_out deve ter capacidade de pelo menos AL_SCALE_MAX_LEN
+ * scale: ponteiro usado para o retorno da função
+ * scale deve ter capacidade de pelo menos AL_SCALE_MAX_LEN
  *
  * Retorno:
- * a escala gerada retornada em scale_out, e a quantidade de notas geradas na
- * escala em out_len
+ * a escala gerada retornada em scale
  *
  * al_status retorna se a função foi bem sucedida ou ocorreu um erro
  *
@@ -103,11 +112,34 @@ double al_interval_ratio(int interval);
  * midi_root > 127                       -> Argumento inválido (AL_ERR_INVALID_ARG)
  * type != dos tipos disponíveis no enum -> Argumento inválido (AL_ERR_INVALID_ARG)
  * escala passando de 127                -> Argumento inválido (AL_ERR_INVALID_ARG)
- * scale_out ou out_len == NULL          -> Argumento nulo     (AL_ERR_NULL_ARG)
+ * scale == NULL                         -> Argumento nulo     (AL_ERR_NULL_ARG)
  *
- * em caso de erro out_len = 0, se out_len != NULL, e nada é escrito em scale_out
+ * em caso de erro nada é escrito em scale
  * 
  */
-al_status al_scale_generate(uint8_t midi_root, al_scale_type type, uint8_t* scale_out, size_t* out_len);
+al_status al_scale_generate(uint8_t midi_root, al_scale_type type,
+                            uint8_t *scale);
+
+/*
+ * Retorna o comprimento de uma escala do tipo escolhido, incluindo a raiz e a
+ * oitava final
+ *
+ * Entrada:
+ * type: tipo da escala a ser consultado o comprimento
+ *
+ * len: ponteiro size_t usado no retorno da função
+ *
+ * Retorno:
+ * um valor inteiro positivo retornado em len, que representa o comprimento 
+ * da escala escolhida
+ *
+ * Erros:
+ * type != dos tipos disponíveis no enum -> Argumento inválido (AL_ERR_INVALID_ARG)
+ * len == NULL                           -> Argumento nulo     (AL_ERR_NULL_ARG)
+ *
+ * em caso de erro len = 0, se len != NULL
+ * 
+ */
+al_status al_scale_length(al_scale_type type, size_t* len);
 
 #endif
