@@ -1,12 +1,18 @@
-/* Arquivo que agrupa os codigos de status comuns a toda a biblioteca, por enquanto tem só um erro, mas eventualmente pode ser necessário adicionar mais tipos de erro */
+/* Arquivo que agrupa os codigos de status comuns a toda a biblioteca */
+#ifndef AUDIO_COMMON_H
+#define AUDIO_COMMON_H
 
 /*
  * Enum que agrupa os status de retorno das funções
  *
- * SUCCESS: sucesso
- * ERR: erro  
+ *         SUCCESS: sucesso
+ * ERR_INVALID_ARG: erro de argumento inválido
+ *    ERR_NULL_ARG: erro de argumento nulo
  */
 typedef enum {
   AL_SUCCESS = 0,
-  AL_ERR = 1
+  AL_ERR_INVALID_ARG = 1,
+  AL_ERR_NULL_ARG = 2
 } al_status;
+
+  #endif
