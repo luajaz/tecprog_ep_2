@@ -15,13 +15,17 @@
 	- [X] al_wave_triangle: preenche com onda triangular.
 
 - [ ] Módulo 3: efeitos
-	- [ ] al_fx_gain: muda o volume.
-	- [ ] al_fx_clip: corta as amostras acima de um limite. 
+	- [X] al_fx_gain: muda o volume.
+	- [X] al_fx_clip: corta as amostras acima de um limite. 
 	- [ ] al_fx_delay: aplica eco.
 	- [ ] al_fx_normalize: ajusta o volume para que o pico chegue a um valor-alvo.
 	- [ ] al_fx_mix: soma um buffer em outro, útil para acordes.
 
 - [ ] Módulo 4: arquivo WAV
 	- [ ] al_wav_write: converte para int16_t, monta o cabeçalho e grava o .wav. 
+
+GERAL:
+- [ ] Ver questão do bit depth (as funções não deveriam manter a amplitude da onda dentro do bit depth? Ou clipamos na hora de escrever?)
+- [ ] não deveriam haver guardas garantindo que n>=0?
 
 <!-- podem criar identações entre as funções pra tarefas sobre cada uma :) --> 
