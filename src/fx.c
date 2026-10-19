@@ -8,7 +8,6 @@
 al_status al_fx_gain(float *buffer, size_t n, float gain) {
     // validacao
     if (buffer == NULL) return AL_ERR_NULL_ARG;
-    if (n < 0)          return AL_ERR_INVALID_ARG;
     if (n == 0)         return AL_SUCCESS;
 
     for (size_t i=0; i < n; i++)
@@ -21,7 +20,6 @@ al_status al_fx_gain(float *buffer, size_t n, float gain) {
 al_status al_fx_clip(float *buffer, size_t n, float clip_threshold) {
     // validacao
     if (buffer == NULL)        return AL_ERR_NULL_ARG;
-    if (n < 0)                 return AL_ERR_INVALID_ARG;
     if (n == 0)                return AL_SUCCESS;
     if (clip_threshold < 0.0f) return AL_ERR_INVALID_ARG;
 
@@ -41,8 +39,6 @@ al_status al_fx_mix(float *buffer_1, size_t n_1, float *buffer_2, size_t n_2) {
     // validacao
     if (buffer_1 == NULL) return AL_ERR_NULL_ARG;
     if (buffer_2 == NULL) return AL_ERR_NULL_ARG;
-    if (n_1 < 0)          return AL_ERR_INVALID_ARG;
-    if (n_2 < 0)          return AL_ERR_INVALID_ARG;
     if (n_1 == 0)         return AL_SUCCESS;
     if (n_2 == 0)         return AL_SUCCESS;
 
@@ -62,7 +58,7 @@ al_status al_fx_mix(float *buffer_1, size_t n_1, float *buffer_2, size_t n_2) {
 float al_buffer_peak(float *buffer, size_t n) {
     // validacao
     if (buffer == NULL) return 0.0f;
-    if (n <= 0)         return 0.0f;
+    if (n == 0)         return 0.0f;
 
     
     float peak = 0.0f;
@@ -80,8 +76,6 @@ al_status al_buffer_copy(float *buffer_1, size_t n_1, float *buffer_2, size_t n_
     // validacao
     if (buffer_1 == NULL) return AL_ERR_NULL_ARG;
     if (buffer_2 == NULL) return AL_ERR_NULL_ARG;
-    if (n_1 < 0)          return AL_ERR_INVALID_ARG;
-    if (n_2 < 0)          return AL_ERR_INVALID_ARG;
     if (n_1 == 0)         return AL_SUCCESS;
     if (n_2 == 0)         return AL_SUCCESS;
     
@@ -102,7 +96,6 @@ al_status al_buffer_copy(float *buffer_1, size_t n_1, float *buffer_2, size_t n_
 al_status al_buffer_delay(float *buffer, size_t n, size_t disp) {
     // validacao
     if (buffer == NULL) return AL_ERR_NULL_ARG;
-    if (n < 0)          return AL_ERR_INVALID_ARG;
     if (n == 0)         return AL_SUCCESS;
     if (disp == 0)      return AL_SUCCESS;
 
@@ -129,7 +122,6 @@ al_status al_buffer_delay(float *buffer, size_t n, size_t disp) {
 al_status al_buffer_advance(float *buffer, size_t n, size_t disp) {
     // validacao
     if (buffer == NULL) return AL_ERR_NULL_ARG;
-    if (n < 0)          return AL_ERR_INVALID_ARG;
     if (n == 0)         return AL_SUCCESS;
     if (disp == 0)      return AL_SUCCESS;
 
@@ -157,12 +149,11 @@ al_status al_buffer_advance(float *buffer, size_t n, size_t disp) {
 al_status al_fx_delay(float *buffer, size_t n, ptrdiff_t delay_samples, float decay, float peak_threshold) {
     // validacao
     if (buffer == NULL)      return AL_ERR_NULL_ARG;
-    if (n < 0)               return AL_ERR_INVALID_ARG;
     if (n == 0)              return AL_SUCCESS;
     if (delay_samples == 0)  return AL_ERR_INVALID_ARG;
     if (decay < 0)           return AL_ERR_INVALID_ARG;
     if (n == 0)              return AL_ERR_INVALID_ARG;
-    if (peak_threshold < 0)) return AL_ERR_INVALID_ARG;
+    if (peak_threshold < 0)  return AL_ERR_INVALID_ARG;
 
 
     float *echo_buffer = malloc(n*sizeof(float));
@@ -201,7 +192,6 @@ al_status al_fx_delay(float *buffer, size_t n, ptrdiff_t delay_samples, float de
 al_status al_fx_normalize(float *buffer, size_t n, float peak) {
     // validacao
     if (buffer == NULL)                 return AL_ERR_NULL_ARG;
-    if (n < 0)                          return AL_ERR_INVALID_ARG;
     if (al_buffer_peak(buffer, n) == 0) return AL_ERR_INVALID_ARG;
     if (n == 0)                         return AL_SUCCESS;
     if (peak < 0)                       return AL_ERR_INVALID_ARG;

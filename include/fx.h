@@ -150,7 +150,7 @@ al_status al_buffer_copy(float *buffer_1, size_t n_1, float *buffer_2, size_t n_
  * em caso de erro nada é escrito em buffer
  * 
  */
-al_status al_buffer_delay(float *buffer, size_t n, size_t disp)
+al_status al_buffer_delay(float *buffer, size_t n, size_t disp);
 
 /*
  * Translada as amostras do buffer para o passado.
@@ -174,7 +174,7 @@ al_status al_buffer_delay(float *buffer, size_t n, size_t disp)
  * em caso de erro nada é escrito em buffer
  * 
  */
-al_status al_buffer_advance(float *buffer, size_t n, size_t disp)
+al_status al_buffer_advance(float *buffer, size_t n, size_t disp);
 
 /*
  * Soma o buffer a si mesmo diversas vezes, transladado para o futuro e com volume reduzido,
