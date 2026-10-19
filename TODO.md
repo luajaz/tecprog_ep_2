@@ -1,6 +1,8 @@
 - [X] criar repo
 - [X] criar to-do
 
+IMPLEMENTAÇÃO
+
 - [X] Módulo 1: notas e escalas 
 	- [X] al_midi_to_hz: converte uma nota MIDI em frequência (Hz).
 	- [X] al_interval_semitones: calcula a distância em semitons entre duas notas.
@@ -17,15 +19,33 @@
 - [ ] Módulo 3: efeitos
 	- [X] al_fx_gain: muda o volume.
 	- [X] al_fx_clip: corta as amostras acima de um limite. 
-	- [ ] al_fx_delay: aplica eco.
-	- [ ] al_fx_normalize: ajusta o volume para que o pico chegue a um valor-alvo.
-	- [ ] al_fx_mix: soma um buffer em outro, útil para acordes.
+	- [X] al_fx_delay: aplica eco.
+	- [X] al_fx_normalize: ajusta o volume para que o pico chegue a um valor-alvo.
+	- [X] al_fx_mix: soma um buffer em outro, útil para acordes.
 
 - [ ] Módulo 4: arquivo WAV
-	- [ ] al_wav_write: converte para int16_t, monta o cabeçalho e grava o .wav. 
+	- [ ] al_wav_write: converte para int16_t, monta o cabeçalho e grava o .wav.
+
+ - [ ] Main
+
+RELATÓRIO TÉCNICO:
+- [ ] começar kkk
+
+README:
+- [ ] começar kkk
+
+MAKEFILE:
+- [ ] começar kkk
+
+APRESENTAÇÃO:
+- [ ] Slides
+- [ ] Video
+
+TESTES:
+- [ ] começar kkk
 
 GERAL:
 - [ ] Ver questão do bit depth (as funções não deveriam manter a amplitude da onda dentro do bit depth? Ou clipamos na hora de escrever?)
-- [ ] não deveriam haver guardas garantindo que n>=0?
+- [X] não deveriam haver guardas garantindo que n>=0?
 
 <!-- podem criar identações entre as funções pra tarefas sobre cada uma :) --> 
