@@ -148,12 +148,12 @@ al_status al_buffer_advance(float *buffer, size_t n, size_t disp) {
 // ou disp + n < 0 (eco vai ficar todo antes do buffer), break
 al_status al_fx_delay(float *buffer, size_t n, ptrdiff_t delay_samples, float decay, float peak_threshold) {
     // validacao
-    if (buffer == NULL)      return AL_ERR_NULL_ARG;
-    if (n == 0)              return AL_SUCCESS;
-    if (delay_samples == 0)  return AL_ERR_INVALID_ARG;
-    if (decay < 0)           return AL_ERR_INVALID_ARG;
-    if (n == 0)              return AL_ERR_INVALID_ARG;
-    if (peak_threshold < 0)  return AL_ERR_INVALID_ARG;
+    if (buffer == NULL)         return AL_ERR_NULL_ARG;
+    if (n == 0)                 return AL_SUCCESS;
+    if (delay_samples <= 0)     return AL_ERR_INVALID_ARG;
+    if (decay < 0 || decay > 1) return AL_ERR_INVALID_ARG;
+    if (n == 0)                 return AL_ERR_INVALID_ARG;
+    if (peak_threshold < 0)     return AL_ERR_INVALID_ARG;
 
 
     float *echo_buffer = malloc(n*sizeof(float));
@@ -175,7 +175,7 @@ al_status al_fx_delay(float *buffer, size_t n, ptrdiff_t delay_samples, float de
         al_fx_gain(echo_buffer, n, decay);
 
         if (disp >= 0)
-            al_buffer_delay(echo_buffer, n, (size_t)disp);
+            al_buffer_delay(echo_buffer, n, (size_t)delay_samples);
         else
             al_buffer_advance(echo_buffer, n, (size_t)(-disp));
 
@@ -192,15 +192,12 @@ al_status al_fx_delay(float *buffer, size_t n, ptrdiff_t delay_samples, float de
 al_status al_fx_normalize(float *buffer, size_t n, float peak) {
     // validacao
     if (buffer == NULL)                 return AL_ERR_NULL_ARG;
-    if (al_buffer_peak(buffer, n) == 0) return AL_ERR_INVALID_ARG;
     if (n == 0)                         return AL_SUCCESS;
+    if (al_buffer_peak(buffer, n) == 0) return AL_ERR_INVALID_ARG;
     if (peak < 0)                       return AL_ERR_INVALID_ARG;
 
 
     float prev_peak = al_buffer_peak(buffer, n);
-    
-    if (prev_peak == 0)
-        return AL_SUCCESS;
 
     // proteger contra prev_peak = INFINITY ou NAN
     if (!isfinite(prev_peak))
