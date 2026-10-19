@@ -17,6 +17,8 @@ static const char *al_status_to_str(al_status st) {
     return "Erro de argumento nulo!";
   case AL_ERR_MALLOC_FAIL:
     return "Erro de alocação de memória!";
+  case AL_ERR_IO:
+    return "Erro de manipulação do arquivo!";
   }
   return "Status desconhecido!";
 }
@@ -85,7 +87,10 @@ static al_status parse_note(const char *note, uint8_t *midi) {
 }
 
 int main(int argc, char* argv[]) {
-  if (argc < 2) return 1;
+  if (argc < 2) {
+    fprintf(stderr, "Uso: <nota1> [nota2 nota3 ...]");
+    return 1;
+  }
 
   // valores pre-estabelecidos, tem que fazer ser personalizavel depois
   double sample_rate = 44100.0;
@@ -126,13 +131,25 @@ int main(int argc, char* argv[]) {
   for (size_t i = 0; i < num_notes; i++) {
     float* slice = buffer + (i * samples_per_note);
     double freq = 0.0;
-    al_midi_to_hz(midi_notes[i], &freq);
+    st = al_midi_to_hz(midi_notes[i], &freq);
+    if (st != AL_SUCCESS) {
+      free(midi_notes);
+      free(buffer);
+      fprintf(stderr, "Ocorreu um erro na conversão para Hz: %s\n", al_status_to_str(st));
+      return 1;
+    }
     // chamando a funcao de seno primeiro, depois tem que dar a opcao de escolher o tipo de onda
-    al_wave_sine(slice, samples_per_note, freq, amp, sample_rate);
+    st = al_wave_sine(slice, samples_per_note, freq, amp, sample_rate);
+    if (st != AL_SUCCESS) {
+      free(midi_notes);
+      free(buffer);
+      fprintf(stderr, "Ocorreu um erro na sintetização da onda: %s\n", al_status_to_str(st));
+      return 1;
+    }
   }
 
   // Escrever o wav
-  st = al_wav_write("out.wav", buffer, total_samples, (uint8_t) sample_rate);
+  st = al_wav_write("out.wav", buffer, total_samples, sample_rate);
   if (st != AL_SUCCESS) {
     free(midi_notes);
     free(buffer);
