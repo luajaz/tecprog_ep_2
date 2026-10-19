@@ -4,8 +4,10 @@
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdbool.h>
+#include <string.h>
 
-#define NOTE_DURATION 0.4
+typedef al_status (*wave_fn)(float *, size_t, double, double, double);
 
 static const char *al_status_to_str(al_status st) {
   switch (st) {
@@ -87,78 +89,126 @@ static al_status parse_note(const char *note, uint8_t *midi) {
 }
 
 int main(int argc, char* argv[]) {
-  if (argc < 2) {
-    fprintf(stderr, "Uso: <nota1> [nota2 nota3 ...]");
+  al_status st = AL_SUCCESS;
+
+  // valores padrao
+  wave_fn wave = al_wave_sine;
+  double amp = 0.5;
+  double duration = 0.4;
+  long r = 44100;
+  const char *out_file = "out.wav";
+  int use_gain = 0, use_delay = 0, use_norm = 0, use_clip = 0;
+  double gain = 1.0, delay_ms = 0.0, decay = 0.5, norm_peak = 1.0, clip = 1.0;
+
+  // lendo as opcoes, no padrao "-letra valor"
+  int i = 1;
+  while (i + 1 < argc && argv[i][0] == '-') {
+    char opt = argv[i][1];
+    const char *val = argv[i + 1];
+
+    if (opt == 'w') {
+      if      (strcmp(val, "sine") == 0)     wave = al_wave_sine;
+      else if (strcmp(val, "square") == 0)   wave = al_wave_square;
+      else if (strcmp(val, "saw") == 0)      wave = al_wave_saw;
+      else if (strcmp(val, "triangle") == 0) wave = al_wave_triangle;
+      else {
+        fprintf(stderr, "Ocorreu um erro: Onda desconhecida: %s\n", val);
+        return 1;
+      }
+    }
+    else if (opt == 'a') amp = atof(val);
+    else if (opt == 'r') r = atol(val);
+    else if (opt == 't') duration = atof(val);
+    else if (opt == 'o') out_file = val;
+    else if (opt == 'g') { gain = atof(val);      use_gain = 1; }
+    else if (opt == 'd') { delay_ms = atof(val);  use_delay = 1; }
+    else if (opt == 'e') decay = atof(val);
+    else if (opt == 'n') { norm_peak = atof(val); use_norm = 1; }
+    else if (opt == 'c') { clip = atof(val);      use_clip = 1; }
+    else {
+      fprintf(stderr, "Ocorreu um erro: Opcao desconhecida: %s\n", argv[i]);
+      return 1;
+    }
+    i += 2;
+  }
+
+  // a partir de i sao as notas
+  if (i >= argc) {
+    fprintf(stderr, "Uso: %s [opcoes] NOTA [NOTA NOTA ...]\n", argv[0]);
     return 1;
   }
 
-  // valores pre-estabelecidos, tem que fazer ser personalizavel depois
-  double sample_rate = 44100.0;
-  double amp = 0.5;
+  if(r <= 0 || r > 384000) {
+    fprintf(stderr, "Ocorreu um erro: Taxa de amostragem deve ser positiva\n");
+    return 1;
+  }
+  sample_rate = (uint32_t) r;
 
-  size_t num_notes = (size_t) argc - 1;
-  size_t samples_per_note = (size_t)(sample_rate * NOTE_DURATION);
+  if(!(duration > 0)) {
+    fprintf(stderr, "Ocorreu um erro: Duração deve ser positiva\n");
+    return 1;
+  }
+
+  size_t num_notes = (size_t)(argc - i);
+  size_t samples_per_note = (size_t)(sample_rate * duration);
   size_t total_samples = samples_per_note * num_notes;
 
-  al_status st = AL_SUCCESS;
+  if(samples_per_note == 0) {
+    fprintf(stderr, "Ocorreu um erro: Duração muito curta\n");
+    return 1;
+  }
 
   // vetor das notas e buffer de audio
   uint8_t *midi_notes = malloc(num_notes * sizeof(uint8_t));
   float *buffer = malloc(total_samples * sizeof(float));
 
   if (buffer == NULL || midi_notes == NULL) {
-    free(midi_notes);
-    free(buffer);
     fprintf(stderr, "Ocorreu um erro: Erro de alocação de memória\n");
-    return 1;
+    goto cleanup;
   }
 
   // Convertendo as notas para midi e guardando em um vetor
-  for (size_t i = 1; i <= num_notes; i++) {
+  for (size_t j = 0; j < num_notes; j++) {
     uint8_t midi;
-    st = parse_note(argv[i], &midi); 
+    st = parse_note(argv[i + j], &midi); 
     if (st != AL_SUCCESS) {
-      free(midi_notes);
-      free(buffer);
-      fprintf(stderr, "Ocorreu um erro na nota %s: %s\n", argv[i], al_status_to_str(st));
-      return 1;
+      fprintf(stderr, "Ocorreu um erro na nota %s: %s\n", argv[i + j], al_status_to_str(st));
+      goto cleanup;
     }
     
-    midi_notes[i-1] = midi;
+    midi_notes[j] = midi;
   }
 
   // Sintese de cada nota
-  for (size_t i = 0; i < num_notes; i++) {
-    float* slice = buffer + (i * samples_per_note);
+  for (size_t j = 0; j < num_notes; j++) {
+    float* slice = buffer + (j * samples_per_note);
     double freq = 0.0;
-    st = al_midi_to_hz(midi_notes[i], &freq);
+    st = al_midi_to_hz(midi_notes[j], &freq);
     if (st != AL_SUCCESS) {
-      free(midi_notes);
-      free(buffer);
       fprintf(stderr, "Ocorreu um erro na conversão para Hz: %s\n", al_status_to_str(st));
-      return 1;
+      goto cleanup;
     }
-    // chamando a funcao de seno primeiro, depois tem que dar a opcao de escolher o tipo de onda
-    st = al_wave_sine(slice, samples_per_note, freq, amp, sample_rate);
+    st = wave(slice, samples_per_note, freq, amp, sample_rate);
     if (st != AL_SUCCESS) {
-      free(midi_notes);
-      free(buffer);
       fprintf(stderr, "Ocorreu um erro na sintetização da onda: %s\n", al_status_to_str(st));
-      return 1;
+      goto cleanup;
     }
   }
 
   // Escrever o wav
-  st = al_wav_write("out.wav", buffer, total_samples, sample_rate);
+  st = al_wav_write(out_file, buffer, total_samples, sample_rate);
   if (st != AL_SUCCESS) {
-    free(midi_notes);
-    free(buffer);
     fprintf(stderr, "Ocorreu um erro na escrita do arquivo: %s\n", al_status_to_str(st));
-    return 1;
+    goto cleanup;
   }
 
   free(midi_notes);
   free(buffer);
   return 0;
+
+ cleanup:
+  free(midi_notes);
+  free(buffer);
+  return 1;
 }
 

@@ -14,7 +14,8 @@ typedef enum {
   AL_SUCCESS = 0,
   AL_ERR_INVALID_ARG = 1,
   AL_ERR_NULL_ARG = 2,
-  AL_ERR_MALLOC_FAIL = 3
+  AL_ERR_MALLOC_FAIL = 3,
+  AL_ERR_IO = 4
 } al_status;
 
   #endif

@@ -1,6 +1,6 @@
 /* Módulo 3 */
-#ifndef AUDIO_WAVE_H
-#define AUDIO_WAVE_H
+#ifndef AUDIO_FX_H
+#define AUDIO_FX_H
 
 #include "audio_common.h"
 #include <stddef.h>
@@ -11,7 +11,6 @@
  * Entrada:
  * n: quantidade de amostras do buffer que serão modificados (a partir da primeira)
  * gain: fator de amplificação a ser aplicado no buffer. Um float qualquer.
- * inversão de fase.
  * buffer: ponteiro float que será modificado, multiplicando cada
  * elemento pelo ganho.
  *
@@ -25,7 +24,6 @@
  *
  * Erros:
  * buffer == NULL -> Argumento nulo (AL_ERR_NULL_ARG)
- * n < 0          -> Argumento inválido (AL_ERR_INVALID_ARG) 
  *
  * em caso de erro nada é escrito em buffer
  * 
@@ -41,21 +39,19 @@ al_status al_fx_gain(float *buffer, size_t n, float gain);
  * buffer: ponteiro float que será modificado, reduzindo a amplitude de amostras excedentes.
  *
  * Retorno:
- * n amostras sobrescritas no buffer multiplicadas pelo fator de amplificação dado
- * pelo parâmetro gain.
+ * n amostras sobrescritas no buffer limitadas por threshold
  * se n == 0 nada é escrito no buffer, e a função retorna sucesso
  *
  * al_status retorna se a função foi bem sucedida ou ocorreu um erro
  *
  * Erros:
  * buffer == NULL -> Argumento nulo     (AL_ERR_NULL_ARG) 
- * n < 0          -> Argumento inválido (AL_ERR_INVALID_ARG)
  * threshold < 0  -> Argumento inválido (AL_ERR_INVALID_ARG)
  *
  * em caso de erro nada é escrito em buffer
  * 
  */
-al_status al_fx_clip(float *buffer, size_t n, float threshold);
+al_status al_fx_clip(float *buffer, size_t n, float clip_threshold);
 
 /*
  * Soma as primeiras min(n_1, n_2) amostras do buffer_1 às min(n_1, n_2) primeiras amostras de buffer_2.
@@ -69,15 +65,13 @@ al_status al_fx_clip(float *buffer, size_t n, float threshold);
  * Retorno:
  * min(n_1, n_2) amostras de buffer_2 sobrescrita com a soma com as primeiras min(n_1, n_2) amostras
  * de buffer_1.
- * se n == 0 nada é escrito no buffer, e a função retorna sucesso
+ * se min(n_1, n_2) == 0 nada é escrito no buffer, e a função retorna sucesso
  *
  * al_status retorna se a função foi bem sucedida ou ocorreu um erro
  *
  * Erros:
  * buffer_1 == NULL -> Argumento nulo (AL_ERR_NULL_ARG)
  * buffer_2 == NULL -> Argumento nulo (AL_ERR_NULL_ARG)
- * n_1 < 0          -> Argumento inválido (AL_ERR_INVALID_ARG)
- * n_2 < 0          -> Argumento inválido (AL_ERR_INVALID_ARG)
  *
  * em caso de erro nada é escrito em buffer
  * 
@@ -97,7 +91,6 @@ al_status al_fx_mix(float *buffer_1, size_t n_1, float *buffer_2, size_t n_2);
  *
  * Erros:
  * buffer == NULL -> return 0.0f
- * n < 0          -> return 0.0f
  *
  */
 float al_buffer_peak(float *buffer, size_t n);
@@ -120,8 +113,6 @@ float al_buffer_peak(float *buffer, size_t n);
  * Erros:
  * buffer_1 == NULL -> Argumento nulo (AL_ERR_NULL_ARG)
  * buffer_2 == NULL -> Argumento nulo (AL_ERR_NULL_ARG)
- * n_1 < 0          -> Argumento inválido (AL_ERR_INVALID_ARG)
- * n_2 < 0          -> Argumento inválido (AL_ERR_INVALID_ARG)
  *
  * em caso de erro nada é escrito em buffer
  * 
@@ -145,7 +136,6 @@ al_status al_buffer_copy(float *buffer_1, size_t n_1, float *buffer_2, size_t n_
  *
  * Erros:
  * buffer == NULL -> Argumento nulo (AL_ERR_NULL_ARG) 
- * n < 0          -> Argumento inválido (AL_ERR_INVALID_ARG)
  *
  * em caso de erro nada é escrito em buffer
  * 
@@ -169,7 +159,6 @@ al_status al_buffer_delay(float *buffer, size_t n, size_t disp);
  *
  * Erros:
  * buffer == NULL -> Argumento nulo (AL_ERR_NULL_ARG) 
- * n < 0          -> Argumento inválido (AL_ERR_INVALID_ARG)
  *
  * em caso de erro nada é escrito em buffer
  * 
@@ -184,7 +173,7 @@ al_status al_buffer_advance(float *buffer, size_t n, size_t disp);
  * 
  * n: quantidade de amostras do buffer que serão modificados (a partir da primeira). Um inteiro não-negativo.
  * delay_samples: número de amostras entre repetições do buffer. Um inteiro não-negativo.
- * decay: ganho a ser aplicado em cada repetição. Note que valores negativos formam uma cauda, que é o efeito usual. Um float qualquer.
+ * decay: ganho a ser aplicado em cada repetição. Maior igual a zero
  * peak_threshold: ecos com pico abaixo dessa amplitude serão silenciados. 
  * buffer: ponteiro float que será modificado, sendo somado a cópias de si mesmo transladadas e com volume alterado.
  *
@@ -197,9 +186,8 @@ al_status al_buffer_advance(float *buffer, size_t n, size_t disp);
  * al_status retorna se a função foi bem sucedida ou ocorreu um erro
  *
  * Erros:
- * buffer == NULL -> Argumento nulo     (AL_ERR_NULL_ARG) 
- * n < 0          -> Argumento inválido (AL_ERR_INVALID_ARG)
- * delay < 0      -> Argumento inválido (AL_ERR_INVALID_ARG)
+ * buffer == NULL     -> Argumento nulo     (AL_ERR_NULL_ARG) 
+ * delay_samples <= 0 -> Argumento inválido (AL_ERR_INVALID_ARG)
  *
  * em caso de erro nada é escrito em buffer
  * 
@@ -225,7 +213,6 @@ al_status al_fx_delay(float *buffer, size_t n, ptrdiff_t delay_samples, float de
  *
  * Erros:
  * buffer == NULL                   -> Argumento nulo     (AL_ERR_NULL_ARG)
- * n < 0                            -> Argumento inválido (AL_ERR_INVALID_ARG)
  * buffer[i] == 0 sempre            -> Argumento inválido (AL_ERR_INVALID_ARG)
  * peak < 0                         -> Argumento inválido (AL_ERR_INVALID_ARG)
  * pico do buffer é NAN ou INFINITY -> Argumento inválido (AL_ERR_INVALID_ARG)
