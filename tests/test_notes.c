@@ -5,7 +5,6 @@
 // marcador para verificar que nada foi escrito
 #define MARKER 255
 
-
 // funcoes auxiliares para o test_scale_generate
 
 // preenche o array inteiro com o valor marcador
