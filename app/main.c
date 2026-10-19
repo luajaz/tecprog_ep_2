@@ -142,7 +142,8 @@ int main(int argc, char* argv[]) {
     fprintf(stderr, "Ocorreu um erro: Taxa de amostragem deve ser positiva\n");
     return 1;
   }
-  sample_rate = (uint32_t) r;
+  
+  uint32_t sample_rate = (uint32_t) r;
 
   if(!(duration > 0)) {
     fprintf(stderr, "Ocorreu um erro: Duração deve ser positiva\n");
