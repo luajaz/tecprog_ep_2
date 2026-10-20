@@ -65,9 +65,9 @@ E, por fim, o módulo 4, com esse buffer com os efeitos aplicados, converte isso
 
 ### Utilização:
 
-A aplicação principal compilada em /bin pode ser executada no seguinte padrão:
+A aplicação principal compilada em /bin pode ser executada utilizando o make run da seguinte maneira:
 
-app [opções] \<nota\> [nota nota ...]
+make run ARGS="[opções] \<nota\> [nota nota ...]"
 
 as seguintes opções são válidas:
 | Argumento | Valor | Valor Padrão | O que faz |
