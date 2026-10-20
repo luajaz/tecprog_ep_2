@@ -159,9 +159,20 @@ int main(int argc, char* argv[]) {
     return 1;
   }
 
+  size_t delay_samples = 0;
+  size_t extra = 0;
+  if (use_delay) {
+    delay_samples = (size_t)(delay_ms * sample_rate / 1000.0);
+    if (delay_samples == 0) {
+      fprintf(stderr, "Ocorreu um erro: Delay curto demais\n");
+    }
+    extra = 8 * delay_samples;
+  }
+  size_t n_total = total_samples + extra;
+
   // vetor das notas e buffer de audio
   uint8_t *midi_notes = malloc(num_notes * sizeof(uint8_t));
-  float *buffer = malloc(total_samples * sizeof(float));
+  float *buffer = calloc(n_total, sizeof(float));
 
   if (buffer == NULL || midi_notes == NULL) {
     fprintf(stderr, "Ocorreu um erro: Erro de alocação de memória\n");
@@ -196,8 +207,41 @@ int main(int argc, char* argv[]) {
     }
   }
 
+  // aplicando os efeitos
+  if (use_gain) {
+    st = al_fx_gain(buffer, n_total, (float)gain);
+    if (st != AL_SUCCESS) {
+      fprintf(stderr, "Ocorreu um erro na aplicação do ganho: %s\n", al_status_to_str(st));
+      goto cleanup;
+    }
+  }
+
+  if (use_delay) {
+    st = al_fx_delay(buffer, n_total, (ptrdiff_t)delay_samples, (float)decay, 0.001f);
+    if (st != AL_SUCCESS) {
+      fprintf(stderr, "Ocorreu um erro na aplicação do delay: %s\n", al_status_to_str(st));
+      goto cleanup;
+    }
+  }
+
+  if (use_norm) {
+    st = al_fx_normalize(buffer, n_total, (float)norm_peak);
+    if (st != AL_SUCCESS) {
+      fprintf(stderr, "Ocorreu um erro na aplicação da normalização: %s\n", al_status_to_str(st));
+      goto cleanup;
+    }
+  }
+
+  if (use_clip) {
+    st = al_fx_clip(buffer, n_total, (float)clip);
+    if (st != AL_SUCCESS) {
+      fprintf(stderr, "Ocorreu um erro na aplicação do clip: %s\n", al_status_to_str(st));
+      goto cleanup;
+    }
+  }
+
   // Escrever o wav
-  st = al_wav_write(out_file, buffer, total_samples, sample_rate);
+  st = al_wav_write(out_file, buffer, n_total, sample_rate);
   if (st != AL_SUCCESS) {
     fprintf(stderr, "Ocorreu um erro na escrita do arquivo: %s\n", al_status_to_str(st));
     goto cleanup;
