@@ -107,5 +107,3 @@ al_status al_wave_triangle(float *buffer, size_t n, double freq, double amp,
   
   return AL_SUCCESS;
 }
-
-

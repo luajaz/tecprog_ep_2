@@ -7,10 +7,15 @@
  *
  * SUCCESS: sucesso
  * ERR_INVALID_ARG: erro de argumento inválido
+<<<<<<< HEAD
  * ERR_NULL_ARG: erro de argumento nulo
  * ERR_MALLOC_FAIL: erro na alocação de memória
  * ERR_IO: erro de input/output
  *
+=======
+ *    ERR_NULL_ARG: erro de argumento nulo
+ * ERR_MALLOC_FAIL: erro de alocação de memória
+>>>>>>> 946ab9c7655c8836c468347b03f772a2bf12327d
  */
 typedef enum {
   AL_SUCCESS = 0,
