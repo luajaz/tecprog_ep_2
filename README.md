@@ -63,3 +63,23 @@ E, por fim, o módulo 4, com esse buffer com os efeitos aplicados, converte isso
 
 14. `al_wav_write`: converte para `int16_t`, monta o cabeçalho e grava o `.wav`.
 
+### Utilização:
+
+A aplicação principal compilada em /bin pode ser executada no seguinte padrão:
+
+app [opções] \<nota\> [nota nota ...]
+
+as seguintes opções são válidas:
+| Argumento | Valor | Valor Padrão | O que faz |
+| --- | --- | --- | --- |
+| -w | sine,square,saw,triangle | sine | Tipo da onda |
+| -a | 0 a 1 | 0.5 | Amplitude(volume) de cada onda |
+| -r | inteiro > 0 | 44100 | Taxa de amostragem(Hz) |
+| -t | segundos > 0 | 0.4 | Duração de cada nota |
+| -o | nome do arquivo | out.wav | Nome do arquivo de saida .wav |
+| -g | número | sem ganho | Valor do ganho, multiplicação do volume |
+| -d | milissegundos > 0 | sem delay | Efeito de delay com esse intervalo entre as repetições |
+| -e | 0 a 1 | 0.5 | Quanto cada esco diminui, só é válido com -d |
+| -n | maior que 0 | sem normalização | Normaliza a onda com esse valor como máximo |
+| -c | maior que 0 | sem clip | Limita as amostras a +- esse valor |
+
