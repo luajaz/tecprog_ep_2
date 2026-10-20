@@ -3,6 +3,7 @@ CC      := gcc
 CFLAGS  := -Wall -Wextra -pedantic -O2 -fPIC -MMD -MP -Iinclude
 LDLIBS  := -lm
 PREFIX  ?= /usr/local
+ARGS    ?= C4 E4 G4 C5
 
 # encontrando os arquivos
 SRCS  := $(wildcard src/*.c)
@@ -51,8 +52,8 @@ test: $(TESTS)
 
 # execucao, executa o aplicativo com a estatica e com a dinamica
 run: bin/app_static bin/app_shared
-	./bin/app_static
-	./bin/app_shared
+	./bin/app_static -o out_static.wav $(ARGS)
+	./bin/app_shared -o out_shared.wav $(ARGS)
 
 # instala a biblioteca no sistema
 install: $(STATIC) $(SHARED)
@@ -62,7 +63,7 @@ install: $(STATIC) $(SHARED)
 
 # limpeza
 clean:
-	rm -rf build lib bin
+	rm -rf build lib bin out_static.wav out_shared.wav
 
 # rastreamento de dependencias
 -include $(OBJS:.o=.d) $(wildcard bin/*.d)
