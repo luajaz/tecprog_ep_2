@@ -1,0 +1,195 @@
+\documentclass{article}
+
+\usepackage{url}
+\usepackage{hyperref}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{tikz}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{graphicx}
+\usepackage[brazil]{babel}
+\graphicspath{ {./images/} }
+
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{1,1,1}
+
+\lstdefinestyle{mystyle}{
+    backgroundcolor=\color{backcolour},   
+    commentstyle=\color{codegreen},
+    keywordstyle=\color{magenta},
+    numberstyle=\tiny\color{codegray},
+    stringstyle=\color{codepurple},
+    basicstyle=\ttfamily\footnotesize,
+    breakatwhitespace=false,         
+    breaklines=true,                 
+    captionpos=b,                    
+    keepspaces=true,                 
+    numbers=left,                    
+    numbersep=5pt,                  
+    showspaces=false,                
+    showstringspaces=false,
+    showtabs=false,                  
+    tabsize=2
+}
+
+\lstset{style=mystyle}
+
+\title{\textbf{Relatório técnico: Audio Library} \\[1em] EP 2, Técnicas de Programação 2026}
+\author{Luã Jaz Ramos Apostólico, Heitor Macedo Brazil}
+
+\begin{document}
+
+\maketitle
+
+\tableofcontents
+
+\clearpage
+
+\section{Problema atacado}
+Nosso projeto ataca o problema da geração de áudio a partir de notas musicais providas. Ou seja, é uma aplicação que, dadas notas musicais escolhidas, gera uma onda com perfil escolhido entre senoidal, quadrada, dente de serra e triangular com a frequência das notas escolhidas num buffer, processa opcionalmente a onda com efeitos de ganho, \textit{clipping}, \textit{mixagem}, \textit{delay} e normalização e então escreve o resultado num arquivo de áaudio WAV.
+
+\section{Arquitetura}
+
+O projeto foi escrito em C e as funções foram distribuídas em quatro módulos:
+\begin{enumerate}
+    \item notas e escalas, implementada no arquivo \texttt{notes.c};
+    \item formas de onda, implementada no arquivo \texttt{wave.c};
+    \item efeitos, implementada no arquivo \texttt{fx.c};
+    \item arquivo WAV, implementada no arquivo \texttt{wavfile.c}.
+\end{enumerate}
+
+\subsection{Módulo 1: notas e escalas}
+O primeiro módulo do projeto, implementado no arquivo \texttt{notes.c}, engloba funções que geram notas e escalas musicais, além de funções auxiliares para operar sobre esses objetos. As funções implementadas são:
+\begin{itemize}
+    \item \texttt{al\_midi\_to\_hz}, que converte uma nota MIDI em frequência (Hz);
+    \item \texttt{al\_interval\_semitones}, que calcula a distância em semitons entre duas notas;
+    \item \texttt{al\_interval\_ratio}, que dá a razão de frequência de um intervalo em semitons;
+    \item \texttt{al\_scale\_generate}, que gera as notas de uma escala (maior, menor, pentatônica, cromática) a partir de uma nota inicial.
+\end{itemize}
+
+Além disso, foi implementado um \texttt{struct} para armazenar as informações de uma escala e um macro que relaciona cada escala em uma lista com um nome (\texttt{AL\_MAJOR}, \texttt{AL\_MINOR}, \texttt{AL\_MAJOR\_PENTATONIC}, \texttt{AL\_MINOR\_PENTATONIC} e \texttt{AL\_CHROMATIC}).
+
+\subsection{Módulo 2: formas de onda}
+O segundo módulo do projeto, implementado no arquivo \texttt{wave.c}, engloba funções que geram ondas sonoras com certo formato, frequência, amplitude e taxa de amostragem. As funções implementadas são:
+\begin{itemize}
+    \item \texttt{al\_wave\_sine}, que gera uma onda senoidal;
+    \item \texttt{al\_wave\_square}, que gera uma onda quadrada;
+    \item \texttt{al\_wave\_saw}, que gera uma onda dente de serra;
+    \item \texttt{al\_wave\_triangle}, que gera uma onda triangular;
+\end{itemize}
+
+Todas as funções recebem um \textit{array} como buffer e seu tamanho, além dos parâmetros da onda.
+
+\subsection{Módulo 3: efeitos}
+O terceiro módulo do projeto, implementado no arquivo \texttt{fx.c}, engloba funções que processam um onda com diversos efeitos, além de funções auxiliares para a implementação dos efeitos. As funções principais são:
+\begin{itemize}
+    \item \texttt{al\_fx\_gain}, que aplica um efeito de ganho, ou seja, de multiplicação do volume das amostras;
+    \item \texttt{al\_fx\_clip}, que aplica um efeito de \textit{clipping}, ou seja, reduz a amplitude de amostras acima de um certo limite para esse limite;
+    \item \texttt{al\_fx\_mix}, que soma dois buffers;
+    \item \texttt{al\_fx\_delay}, que gera um efeito de eco, duplicando a onda várias vezes com amplitude reduzida e transladada no tempo;
+    \item \texttt{al\_fx\_normalize}, que escala toda a onda para que seu pico tenha uma amplitude específica.
+\end{itemize}
+
+Além disso, as funções auxiliares implementadas foram:
+\begin{itemize}
+    \item \texttt{al\_buffer\_peak}, que retorna a maior amplitude de amostra do buffer, ou seja, a amplitude do pico;
+    \item \texttt{al\_buffer\_copy}, que copia as amostras de um buffer para outro;
+    \item \texttt{al\_buffer\_delay}, que translada as amostras de um buffer para o futuro, substituindo o espaço vazio com zeros;
+    \item \texttt{al\_buffer\_advance}, que translada as amostras de um buffer para o passado, substituindo o espaço vazio com zeros.
+\end{itemize}
+
+\subsection{Módulo 4: arquivo WAV}
+O quarto módulo do projeto, implementado no arquivo \texttt{wavfile.c}, engloba a função \texttt{al\_wav\_write}, que escreve uma onda contida num buffer em um arquivo WAV, incluindo a conversão de amostras de \texttt{float} para \texttt{int16\_t}, a composição do cabeçalho e a escrita do arquivo em si.
+
+\subsection{Códigos de retorno}
+Foram definidos quatro códigos de retorno diferentes num arquivo \texttt{audio\_common.h}, sinalizando o estado de saída das funções implementadas:
+\begin{itemize}
+    \item (cód. \texttt{0}) \texttt{AL\_SUCCESS}: sucesso
+    \item (cód. \texttt{1}) \texttt{AL\_ERR\_INVALID\_ARG}: erro de argumento inválido
+    \item (cód. \texttt{2}) \texttt{AL\_ERR\_NULL\_ARG}: erro de argumento nulo
+    \item (cód. \texttt{3}) \texttt{AL\_ERR\_MALLOC\_FAIL} : erro na alocação de memória
+    \item (cód. \texttt{4}) \texttt{AL\_ERR\_IO}: erro de input/output
+\end{itemize}
+
+\subsection{Aplicação principal}
+A aplicação principal, implementada no arquivo \texttt{main.c}, engloba:
+\begin{itemize}
+    \item um macro para traduzir códigos de retorno em texto legível;
+    \item a função \texttt{parse\_note}, que traduz notas escritas com oitava (como ``A4'', ``Cb1'', ``D\#7", etc) em MIDI;
+    \item a função \texttt{main}, contendo a interface de uso da aplicação.
+\end{itemize}
+
+Ao ser executada, a função \texttt{main} lê as opções dos argumentos providos pela linha de comando e executa diferentes branchs dependendo delas:
+\begin{itemize}
+    \item \texttt{-w sine|square|saw|triangle}: escolhe o formato de onda;
+    \item \texttt{-a amp}: gera uma onda de amplitude ``\texttt{amp}";
+    \item \texttt{-r rate}: gera uma onda com taxa de amostragem ``\texttt{rate}" em Hz, entre 1 e 384000;
+    \item \texttt{-t tempo}: gera uma onda de tempo ``\texttt{tempo}" em segundos;
+    \item \texttt{-o path/to/file}: escreve o arquivo no caminho ``\texttt{path/to/file}";
+    \item \texttt{-g gain}: aplica um efeito de ganho com intensidade ``\texttt{gain}";
+    \item \texttt{-d delay\_ms}: aplica o efeito de delay com tempo ``\texttt{delay\_ms}" em milissegundos;
+    \item \texttt{-e decay}: aplica o efeito de delay com decay ``\texttt{decay}", se \texttt{-d} também tiver sido passado;
+    \item \texttt{-n norm\_peak}: aplica o efeito de normalização com valor ``\texttt{norm\_peak}";
+    \item \texttt{-c clip}: aplica o efeito de clipping com valor ``\texttt{clip}".
+\end{itemize}
+
+Dessa maneira, a utilização da aplicação se resume em:
+
+\centerline{\texttt{audio\_library [opções] [nota1] [nota2] [nota3] ...}}
+
+
+Finalmente, a função sintetiza as notas em um buffer e escreve a header e os dados no arquivo.
+
+\section{Makefile}
+Foi escrita uma Makefile para automatizar o processo de compilação, instalação e execução do projeto. As opções implementadas foram:
+
+\begin{itemize}
+    \item \texttt{make lib/libaudio.a}: compila apenas a biblioteca estática;
+    \item \texttt{make lib/libaudio.so}: compila apenas a biblioteca dinâmica;
+    \item \texttt{make bin/app\_static}: compila a aplicação utilizando a biblioteca estática;
+    \item \texttt{make lib/app\_shared}: compila a aplicação utilizando a biblioteca dinâmica;
+    \item \texttt{make test}: executa todos os testes;
+    \item \texttt{make run}: compila a aplicação (se necessário) e executa;
+    \item \texttt{make install}: instala em \texttt{\$(PREFIX)} (por padrão, \texttt{/usr/local});
+    \item \texttt{make clean}: apaga os diretórios \texttt{build/}, \texttt{lib/} e \texttt{bin/}.
+    \item \texttt{make all} (equivalente a apenas \texttt{make}): compila todas as opções.
+\end{itemize}
+
+O arquivo Makefile provido permite a compilação da biblioteca de forma dinâmica ou estática. Uma compilação dinâmica permite um arquivo executável menor, mas irá depender mais da instalação local de dependências no sistema operacional em que for executado, enquanto uma compilação estática gera um executável maior, mas é muito mais portável, pois carrega todas as dependências necessárias para a execução.
+
+\section{Testes}
+Foram escritos testes para os módulos 1 e 2 e para funções utilitárias, testando casos normais, assim como casos de fronteira e casos inválidos, permitindo a validação do funcionamento das funções implementadas.
+
+\section{Versionamento com Git}
+
+Foi usado um repositório simples do GitHub para manter o registro de versões do projeto. Inicialmente usamos um branch para cada módulo, mas depois passamos a utilizar apenas o branch main pois não havia possibilidade de conflito dado o nosso workflow.
+
+O repositório Git conta com um arquivo \texttt{README.md} e um \texttt{TODO.md} mantendo o briefing do projeto e as tarefas concluídas e pendentes.
+
+Um commit final foi marcado com a tag \texttt{v1.0}, demarcando o primeiro \textit{release} final do projeto.
+
+\section{Dificuldades encontradas}
+Dentre as dificuldades encontradas durante o projeto, destacam-se:
+\begin{itemize}
+    \item Utilização de arrays muito grandes, com potenciais problemas de overflow;
+    \item Aprendizado do funcionamento de arquivos WAV
+    \item Aprendizado da utilização do Make;
+    \item Questões de comunicação entre membros do grupo e cumprimento de prazos.
+\end{itemize}
+
+\section{Resultados obtidos e futuras melhorias}
+Com esse projeto, obtivemos uma biblioteca de geração de áudio simples funcional, capaz de gerar áudio de forma bastante prática e versátil, além de aplicar diversos efeitos a essas ondas.
+
+Entre as possíveis futuras melhorias do projeto, podemos citar: 
+\begin{itemize}
+    \item implementação de uma utilização em tempo real, com input MIDI;
+    \item implementação de outros efeitos como reverb, overdrive, chorus, etc;
+    \item implementação de um \textit{piano roll} gráfico, facilitando a composição de melodias;
+    \item implementação de uma biblioteca de acordes, possibilitando a geração automática de acordes de acordo com suas qualidades (maior, menor, suspenso, aumentado, com notas adicionadas como a sétima, nona, etc);
+    \item implementação de um módulo separado de efeitos, permitindo a aplicação em arquivos WAV já escritos previamente.
+\end{itemize}
+
+\end{document}

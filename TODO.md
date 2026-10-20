@@ -23,19 +23,19 @@ IMPLEMENTAÇÃO
 	- [X] al_fx_normalize: ajusta o volume para que o pico chegue a um valor-alvo.
 	- [X] al_fx_mix: soma um buffer em outro, útil para acordes.
 
-- [ ] Módulo 4: arquivo WAV
-	- [ ] al_wav_write: converte para int16_t, monta o cabeçalho e grava o .wav.
+- [X] Módulo 4: arquivo WAV
+	- [X] al_wav_write: converte para int16_t, monta o cabeçalho e grava o .wav.
 
- - [ ] Main
+ - [X] Main
 
 RELATÓRIO TÉCNICO:
-- [ ] começar kkk
+- [X] começar kkk
 
 README:
-- [ ] começar kkk
+- [X] começar kkk
 
 MAKEFILE:
-- [ ] começar kkk
+- [X] começar kkk
 
 APRESENTAÇÃO:
 - [ ] Slides
@@ -48,7 +48,7 @@ TESTES:
 - [ ] testes módulo 4
 
 GERAL:
-- [ ] Ver questão do bit depth (as funções não deveriam manter a amplitude da onda dentro do bit depth? Ou clipamos na hora de escrever?) <!-- Creio que não, acho que seria melhor manter isso pro módulo 4 lidar, os outros módulos não precisam lidar com as questões de arquivo, isso é do módulo 4 -->
+- [X] Ver questão do bit depth (as funções não deveriam manter a amplitude da onda dentro do bit depth? Ou clipamos na hora de escrever?) <!-- Creio que não, acho que seria melhor manter isso pro módulo 4 lidar, os outros módulos não precisam lidar com as questões de arquivo, isso é do módulo 4 -->
 - [X] não deveriam haver guardas garantindo que n>=0?
 <!-- Não precisava da verificação, pq a gente tá recebendo n como size_t, que é unsigned, então nunca é negativo -->
 

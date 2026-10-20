@@ -5,9 +5,12 @@
 /*
  * Enum que agrupa os status de retorno das funções
  *
- *         SUCCESS: sucesso
+ * SUCCESS: sucesso
  * ERR_INVALID_ARG: erro de argumento inválido
- *    ERR_NULL_ARG: erro de argumento nulo
+ * ERR_NULL_ARG: erro de argumento nulo
+ * ERR_MALLOC_FAIL: erro na alocação de memória
+ * ERR_IO: erro de input/output
+ *
  */
 typedef enum {
   AL_SUCCESS = 0,
