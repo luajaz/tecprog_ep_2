@@ -17,7 +17,7 @@
  *
  * Retorno:
  * a função escreve o arquivo .wav com base nos dados recebidos, saída é mono,
- * PCM 16 bits 
+ * PCM 16 bits, amostras fora de [-1, 1] são limitadas a +-1
  *
  * al_status retorna se a função foi bem sucedida ou ocorreu um erro
  *
@@ -26,7 +26,7 @@
  * n > (UINT32_MAX-36)/2                           -> Argumento inválido (AL_ERR_INVALID_ARG)
  * file_name == NULL                               -> Argumento nulo     (AL_ERR_NULL_ARG)
  * buffer == NULL                                  -> Argumento nulo     (AL_ERR_NULL_ARG)
- * falha ao manipular o arquivo (AL_ERR_IO)
+ * falha ao manipular o arquivo, nesse caso o arquivo pode ficar incompleto (AL_ERR_IO)
  * 
  */
 al_status al_wav_write(const char* file_name, const float *buffer, size_t n, uint32_t sample_rate);
